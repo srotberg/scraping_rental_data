@@ -221,40 +221,49 @@ def get_next_url(url: str):
     
     # returns the url of the next page
     return next_url.find('a', class_='button next')['href']
+
+def scrape_data(url='https://toronto.craigslist.org/d/apts-housing-for-rent/search/apa'):
+    """This function take url as the website address and loops over all
+    the listings in that url. It saves a DataFrame which includes: rents,
+    numbers of bedrooms, location, GPS coordaintes, and distance to downtown 
+    (default is Toronto)
+    
+    Args:
+        url: the website url
+    """    
+    
+    # creates a copy of the url in order to later call different pages
+    # it takes out the part that says "/search/apa"
+    url_copy=url.replace('/search/apa','')
+    
+    # initializes the all_data which will be used to produce the final output
+    all_data=[]
+    
+    # checks if the url is not empty
+    while url!='':
+        
+        # calls a function that gets all the data from the url page
+        # and appends it to all_data
+        all_data.append(get_data_from_page(url=url)) 
+        
+        # calls a function that finds the next page url using the button for next page
+        next_url=get_next_url(url)
             
-# starts out with this url
-url='https://toronto.craigslist.org/d/apts-housing-for-rent/search/apa'
+        # checks if there is a next page button
+        if next_url!='':
+            
+            # updaes the url page based on the url_copy and the next_url
+            url=url_copy+next_url
+            
+        else:            
+            
+            # if there is no next page button the url is ''
+            url=''
+        
+        # adds up all the data
+        master_df = pd.concat(all_data)
+
+    # saves as a .csv file
+    master_df.to_csv("toronto_craigslist_data.csv", index=False)
     
-# creates a copy of the url in order to later call different pages
-# it takes out the part that says "/search/apa"
-url_copy=url.replace('/search/apa','')
-
-# initializes the all_data which will be used to produce the final output
-all_data=[]
-
-# checks if the url is not empty
-while url!='':
-
-    # calls a function that gets all the data from the url page
-    # and appends it to all_data
-    all_data.append(get_data_from_page(url=url)) 
-    
-    # calls a function that finds the next page url using the button for next page
-    next_url=get_next_url(url)
-        
-    # checks if there is a next page button
-    if next_url!='':
-        
-        # updaes the url page based on the url_copy and the next_url
-        url=url_copy+next_url
-       
-    else:
-        
-        # if there is no next page button the url is ''
-        url=''
-        
-# adds up all the data
-master_df = pd.concat(all_data)
-
-# saves as a .csv file
-master_df.to_csv("toronto_craigslist_data.csv", index=False)
+scrape_data()
