@@ -128,7 +128,7 @@ def get_data_from_page(url: str, largest_rent=6000.0,smallest_rent=10.0):
             # splitting by "," so that only the first part of the text is
             # saved (sometimes there is more text after that is not the city)
             cities=city.text.strip().strip('()').split(',')[0]
-                    .
+                    
         # saves the rent as a float by taking out the "$" sign from rent
         rnt=float(rent.text.replace('$',''))
                         
