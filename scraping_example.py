@@ -27,12 +27,12 @@ def get_distance(final_coordinates,initial_coordinates=[43.6536582,-79.39024]):
 
         # computing distance by longitudes and latitudes
         distance = 6371.01 * acos(sin(slat)*sin(elat) + cos(slat)*cos(elat)*cos(slon - elon))
-       
-    # if there are no final coordinates, then it saves the distance as negative
+     
+    # if there are no final coordinates, then it saves distance as a negative
     else:
             
-        distance=-1
-        
+        distance=-1.0
+                    
     # returns the computed distance
     return distance
 
@@ -125,7 +125,7 @@ def get_data_from_page(url: str, largest_rent=6000.0,smallest_rent=10.0):
         # distance based on the final coordaintes (the function default is 
         # that the city center is Nathan Phillips Square)
         distance=get_distance(final_coordinates=coordinates)
-        
+                
         # initializes city name
         cities = ''
         
@@ -197,8 +197,8 @@ def get_data_from_page(url: str, largest_rent=6000.0,smallest_rent=10.0):
             "bedroom": all_bedrooms,
             "city": all_cities,
             "coordinates": all_coordinates,
-            "distance": distance})
-
+            "distance": all_distance})
+    
     # returns the data frame created df
     return df
 
