@@ -17,13 +17,21 @@ def get_distance(final_coordinates,initial_coordinates=[43.6536582,-79.39024]):
         initial_coordinates: the location of interest (default to downtown TO)
     """
     
-    slat = radians(initial_coordinates[0])
-    slon = radians(initial_coordinates[1])
-    elat = radians(final_coordinates[0])
-    elon = radians(final_coordinates[1])
+    # checks if there are final coordinates
+    if (len(final_coordinates)==2):
+    
+        slat = radians(initial_coordinates[0])
+        slon = radians(initial_coordinates[1])
+        elat = radians(final_coordinates[0])
+        elon = radians(final_coordinates[1])
 
-    # computing distance by longitudes and latitudes
-    distance = 6371.01 * acos(sin(slat)*sin(elat) + cos(slat)*cos(elat)*cos(slon - elon))
+        # computing distance by longitudes and latitudes
+        distance = 6371.01 * acos(sin(slat)*sin(elat) + cos(slat)*cos(elat)*cos(slon - elon))
+       
+    # if there are no final coordinates, then it saves the distance as negative
+    else:
+            
+        distance=-1
         
     # returns the computed distance
     return distance
