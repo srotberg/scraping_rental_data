@@ -226,7 +226,8 @@ def get_next_url(url: str):
 url='https://toronto.craigslist.org/d/apts-housing-for-rent/search/apa'
     
 # creates a copy of the url in order to later call different pages
-url_copy='https://toronto.craigslist.org/d/apts-housing-for-rent'
+# it takes out the part that says "/search/apa"
+url_copy=url.replace('/search/apa','')
 
 # initializes the all_data which will be used to produce the final output
 all_data=[]
