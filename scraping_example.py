@@ -8,73 +8,50 @@ import pandas as pd
 import numpy as np
 import geopy.distance as gp
 
-def get_distance(final_coordinates,initial_coordinates=[43.6536582,-79.39024]):
-    """ Returns in km the distance of the property in location 
-        final_coordinates from the location initial_coordinates
-        
-    Args:
-        final_coordinates: the coordinates of the property
-        initial_coordinates: the location of interest (default to downtown TO)
-    """
-    
-    # checks if there are final coordinates
-    if (len(final_coordinates)==2):
-    
-        slat = radians(initial_coordinates[0])
-        slon = radians(initial_coordinates[1])
-        elat = radians(final_coordinates[0])
-        elon = radians(final_coordinates[1])
-
-        # computing distance by longitudes and latitudes
-        distance = 6371.01 * acos(sin(slat)*sin(elat) + cos(slat)*cos(elat)*cos(slon - elon))
-     
-    # if there are no final coordinates, then it saves distance as a negative
-    else:
-            
-        distance=-1.0
-                    
-    # returns the computed distance
-    return distance
-
-def get_coordinates(url: str):
-    """ Returns the longitude and latitude coordinates of the property
-        that is listed in web address url
+def scrape_data(url='https://toronto.craigslist.org/d/apts-housing-for-rent/search/apa'):
+    """This function take url as the website address and loops over all
+    the listings in that url. It saves a DataFrame which includes: rents,
+    numbers of bedrooms, location, GPS coordaintes, and distance to downtown 
+    (default is Toronto)
     
     Args:
-        url: web address
-    """
+        url: the website url
+    """    
     
-    # command to request the page based on the url
-    page=rq.get(url)
+    # creates a copy of the url in order to later call different pages
+    # it takes out the part that says "/search/apa"
+    url_copy=url.replace('/search/apa','')
+    
+    # initializes the all_data which will be used to produce the final output
+    all_data=[]
+    
+    # checks if the url is not empty
+    while url!='':
         
-    # command to parse the page by html
-    soup=BeautifulSoup(page.content, 'html.parser')
+        # calls a function that gets all the data from the url page
+        # and appends it to all_data
+        all_data.append(get_data_from_page(url=url)) 
         
-    # gets the results that maps the address to coordaintes 
-    results=soup.find('p', class_='mapaddress')
-    
-    coordinates_url=''
-    
-    # starts a coordinates list
-    coordinates=[]
-    
-    # checks if there is an map address
-    if results:
-                
-        # gets the full webaddress with the coordinates
-        coordinates_url=results.find('a')['href']
+        # calls a function that finds the next page url using the button for next page
+        next_url=get_next_url(url)
             
-        # since the coordaintes always appear after the "@" sign, 
-        # and are split by a "," x saves the part that comes after the  
-        # "@" sign and parses out the string by ","
-        x=coordinates_url.split('@')[-1].split(',')
+        # checks if there is a next page button
+        if next_url!='':
+            
+            # updaes the url page based on the url_copy and the next_url
+            url=url_copy+next_url
+            
+        else:            
+            
+            # if there is no next page button the url is ''
+            url=''
         
-        # saves coordinates based on the first and second elements of the split
-        coordinates=[float(x[0]),float(x[1])]
-        
-    # returns the coordinates
-    return coordinates
-        
+        # adds up all the data
+        master_df = pd.concat(all_data)
+
+    # saves as a .csv file
+    master_df.to_csv("toronto_craigslist_data.csv", index=False)
+    
 def get_data_from_page(url: str, largest_rent=6000.0,smallest_rent=10.0):
     """ Returns all the aapartments for rent on a given page on Craigslist
     exclusing rents below smallest_rent, and if a rent is above largest_rent
@@ -202,6 +179,73 @@ def get_data_from_page(url: str, largest_rent=6000.0,smallest_rent=10.0):
     # returns the data frame created df
     return df
 
+def get_coordinates(url: str):
+    """ Returns the longitude and latitude coordinates of the property
+        that is listed in web address url
+    
+    Args:
+        url: web address
+    """
+    
+    # command to request the page based on the url
+    page=rq.get(url)
+        
+    # command to parse the page by html
+    soup=BeautifulSoup(page.content, 'html.parser')
+        
+    # gets the results that maps the address to coordaintes 
+    results=soup.find('p', class_='mapaddress')
+    
+    coordinates_url=''
+    
+    # starts a coordinates list
+    coordinates=[]
+    
+    # checks if there is an map address
+    if results:
+                
+        # gets the full webaddress with the coordinates
+        coordinates_url=results.find('a')['href']
+            
+        # since the coordaintes always appear after the "@" sign, 
+        # and are split by a "," x saves the part that comes after the  
+        # "@" sign and parses out the string by ","
+        x=coordinates_url.split('@')[-1].split(',')
+        
+        # saves coordinates based on the first and second elements of the split
+        coordinates=[float(x[0]),float(x[1])]
+        
+    # returns the coordinates
+    return coordinates
+
+def get_distance(final_coordinates,initial_coordinates=[43.6536582,-79.39024]):
+    """ Returns in km the distance of the property in location 
+        final_coordinates from the location initial_coordinates
+        
+    Args:
+        final_coordinates: the coordinates of the property
+        initial_coordinates: the location of interest (default to downtown TO)
+    """
+    
+    # checks if there are final coordinates
+    if (len(final_coordinates)==2):
+    
+        slat = radians(initial_coordinates[0])
+        slon = radians(initial_coordinates[1])
+        elat = radians(final_coordinates[0])
+        elon = radians(final_coordinates[1])
+
+        # computing distance by longitudes and latitudes
+        distance = 6371.01 * acos(sin(slat)*sin(elat) + cos(slat)*cos(elat)*cos(slon - elon))
+     
+    # if there are no final coordinates, then it saves distance as a negative
+    else:
+            
+        distance=-1.0
+                    
+    # returns the computed distance
+    return distance
+        
 def get_next_url(url: str):
     """ Returns the reference of the next page of listings
     
@@ -221,49 +265,5 @@ def get_next_url(url: str):
     
     # returns the url of the next page
     return next_url.find('a', class_='button next')['href']
-
-def scrape_data(url='https://toronto.craigslist.org/d/apts-housing-for-rent/search/apa'):
-    """This function take url as the website address and loops over all
-    the listings in that url. It saves a DataFrame which includes: rents,
-    numbers of bedrooms, location, GPS coordaintes, and distance to downtown 
-    (default is Toronto)
-    
-    Args:
-        url: the website url
-    """    
-    
-    # creates a copy of the url in order to later call different pages
-    # it takes out the part that says "/search/apa"
-    url_copy=url.replace('/search/apa','')
-    
-    # initializes the all_data which will be used to produce the final output
-    all_data=[]
-    
-    # checks if the url is not empty
-    while url!='':
-        
-        # calls a function that gets all the data from the url page
-        # and appends it to all_data
-        all_data.append(get_data_from_page(url=url)) 
-        
-        # calls a function that finds the next page url using the button for next page
-        next_url=get_next_url(url)
-            
-        # checks if there is a next page button
-        if next_url!='':
-            
-            # updaes the url page based on the url_copy and the next_url
-            url=url_copy+next_url
-            
-        else:            
-            
-            # if there is no next page button the url is ''
-            url=''
-        
-        # adds up all the data
-        master_df = pd.concat(all_data)
-
-    # saves as a .csv file
-    master_df.to_csv("toronto_craigslist_data.csv", index=False)
-    
+   
 scrape_data()
