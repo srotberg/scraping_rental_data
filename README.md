@@ -6,7 +6,7 @@ Note that if the code loops over thousands of listings, this may take about 5-10
 
 Then, it generates various statistics by the number of bedrooms as well as regresses rent on bedrooms and distance to downtown. 
 
-Lastly, if you run this plotting [script](heat_map_example.py), you will get a heat map of all the rents around the city.
+Lastly, if you run this plotting [script](heat_map_example.py), you will get a heat map of all the rents around the city. Here is what I [got](heat_map_toronto_craigslist_data.png) when I ran the code on the January 5th 2020
 
 You will need these packages:
 * requests
