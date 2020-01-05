@@ -11,7 +11,8 @@ import math
 from sklearn import linear_model
 import statsmodels.api as sm
 
-def scrape_data(url='https://toronto.craigslist.org/d/apts-housing-for-rent/search/apa',\
+def scrape_data(url=\
+                'https://toronto.craigslist.org/d/apts-housing-for-rent/search/apa',\
                 scrape=1):
     """This function take url as the website address and loops over all
     the listings in that url. It saves a DataFrame which includes: rents,
@@ -320,5 +321,5 @@ def regress_rent_on_bdrms_distance(df):
 # if it's run from another script, we want to avoid going through the whole
 # code in the main script
 if __name__=="__main__":  
-    scrape_data()
+    scrape_data(,1)
     
