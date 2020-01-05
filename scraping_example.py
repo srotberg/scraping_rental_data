@@ -322,4 +322,5 @@ def regress_rent_on_bdrms_distance(df):
 # if it's run from another script, we want to avoid going through the whole
 # code in the main script
 if __name__=="__main__":  
-    scrape_data(,1)
+    scrape_data('https://toronto.craigslist.org/d/apts-housing-for-rent/search/apa',\
+                1,'toronto_craigslist_data.csv')
