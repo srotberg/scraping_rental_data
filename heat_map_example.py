@@ -12,7 +12,6 @@ import matplotlib.pyplot as plt
 
 def plotting_heat_map(file_name='toronto_craigslist_data.csv',\
                       json_name='https://raw.githubusercontent.com/jasonicarter/toronto-geojson/master/toronto_crs84.geojson',\
-                      lat=43.6536582,long=-79.39024,\
                       max_distance=15,\
                       min_bedrooms=1,\
                       max_bedrooms=1,\
@@ -24,8 +23,6 @@ def plotting_heat_map(file_name='toronto_craigslist_data.csv',\
         file_name: file name to be called (default='toronto_craigslist_data.csv')
         json_name: file address for the map of the city on which data is superimposed 
                     (defualt='https://raw.githubusercontent.com/jasonicarter/toronto-geojson/master/toronto_crs84.geojson')
-        lat: latitude coordinate of the center (default=43.6536582)
-        long: longitude coordinate of the center (default=-79.39024)
         max_distance: exclude renatal that are more than max_distance
                         away from the center (default=5)
         min_bedrooms: excludes rentals with less than min_bedrooms bedrooms
@@ -64,7 +61,7 @@ def plotting_heat_map(file_name='toronto_craigslist_data.csv',\
     ax=gplt.webmap(city_map,projection=gcrs.WebMercator())
     
     # plots rents by color on the map of the city
-    gplt.pointplot(gdf, ax=ax, hue='rent', legend=True, projection=gcrs.AlbersEqualArea())
+    gplt.pointplot(gdf,ax=ax,hue='rent',legend=True,projection=gcrs.AlbersEqualArea())
         
     # saves the plot as a .png file
     plt.savefig('heat_map_'+file_name.replace('.csv','.png'))
