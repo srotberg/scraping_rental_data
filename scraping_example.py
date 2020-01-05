@@ -319,7 +319,8 @@ def regress_rent_on_bdrms_distance(df):
           regr.coef_[0], 'dollars')
     print('Conditional on number of bedrooms, moving one km away from the initial coordiates saves:', \
           regr.coef_[1], 'dollars')
-        
+       
+    # plots rent on distance for studio apartments
     sns.scatterplot(x='distance',y='rent',data=df[df['bedroom']==0])
             
 # checks if functions are run from the main page or from another script
