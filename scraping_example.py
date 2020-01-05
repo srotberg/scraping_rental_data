@@ -13,7 +13,7 @@ import statsmodels.api as sm
 
 def scrape_data(url=\
                 'https://toronto.craigslist.org/d/apts-housing-for-rent/search/apa',\
-                scrape=1):
+                scrape=1,file_name='toronto_craigslist_data.csv'):
     """This function take url as the website address and loops over all
     the listings in that url. It saves a DataFrame which includes: rents,
     numbers of bedrooms, location, GPS coordaintes, and distance to downtown 
@@ -24,6 +24,7 @@ def scrape_data(url=\
         scrape: takes 0 or 1. 
                 0 means that the program is using an existing DataFrame
                 1 means that the program will scrape new data
+        file_name: this is name of the output file or the file to read
     """
     
     if scrape==1:
@@ -60,12 +61,12 @@ def scrape_data(url=\
             master_df = pd.concat(all_data)
             
         # saves as a .csv file
-        master_df.to_csv("toronto_craigslist_data.csv", index=False)
+        master_df.to_csv(file_name, index=False)
         
     else:
     
         # saves as a .csv file
-        master_df=pd.read_csv("toronto_craigslist_data.csv")
+        master_df=pd.read_csv(file_name)
         
     # gives a full description of the data
     description=master_df.groupby("bedroom").describe()
