@@ -10,6 +10,8 @@ import geopy.distance as gp
 import math
 from sklearn import linear_model
 import statsmodels.api as sm
+import matplotlib.pyplot as plt
+import seaborn as sns
 
 def scrape_data(url=\
                 'https://toronto.craigslist.org/d/apts-housing-for-rent/search/apa',\
@@ -317,10 +319,12 @@ def regress_rent_on_bdrms_distance(df):
           regr.coef_[0], 'dollars')
     print('Conditional on number of bedrooms, moving one km away from the initial coordiates saves:', \
           regr.coef_[1], 'dollars')
-           
+        
+    sns.scatterplot(x='distance',y='rent',data=df[df['bedroom']==0])
+            
 # checks if functions are run from the main page or from another script
 # if it's run from another script, we want to avoid going through the whole
 # code in the main script
 if __name__=="__main__":  
     scrape_data('https://toronto.craigslist.org/d/apts-housing-for-rent/search/apa',\
-                1,'toronto_craigslist_data.csv')
+                0,'toronto_craigslist_data.csv')
