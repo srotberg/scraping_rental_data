@@ -7,8 +7,12 @@ from bs4 import BeautifulSoup
 import pandas as pd
 import numpy as np
 import geopy.distance as gp
+import math
+from sklearn import linear_model
+import statsmodels.api as sm
 
-def scrape_data(url='https://toronto.craigslist.org/d/apts-housing-for-rent/search/apa'):
+def scrape_data(url='https://toronto.craigslist.org/d/apts-housing-for-rent/search/apa',\
+                scrape=1):
     """This function take url as the website address and loops over all
     the listings in that url. It saves a DataFrame which includes: rents,
     numbers of bedrooms, location, GPS coordaintes, and distance to downtown 
@@ -16,43 +20,60 @@ def scrape_data(url='https://toronto.craigslist.org/d/apts-housing-for-rent/sear
     
     Args:
         url: the website url
-    """    
+        scrape: takes 0 or 1. 
+                0 means that the program is using an existing DataFrame
+                1 means that the program will scrape new data
+    """
     
-    # creates a copy of the url in order to later call different pages
-    # it takes out the part that says "/search/apa"
-    url_copy=url.replace('/search/apa','')
+    if scrape==1:
     
-    # initializes the all_data which will be used to produce the final output
-    all_data=[]
-    
-    # checks if the url is not empty
-    while url!='':
+        # creates a copy of the url in order to later call different pages
+        # it takes out the part that says "/search/apa"
+        url_copy=url.replace('/search/apa','')
         
-        # calls a function that gets all the data from the url page
-        # and appends it to all_data
-        all_data.append(get_data_from_page(url=url)) 
+        # initializes the all_data which will be used to produce the final output
+        all_data=[]
         
-        # calls a function that finds the next page url using the button for next page
-        next_url=get_next_url(url)
+        # checks if the url is not empty
+        while url!='':
             
-        # checks if there is a next page button
-        if next_url!='':
+            # calls a function that gets all the data from the url page
+            # and appends it to all_data
+            all_data.append(get_data_from_page(url=url)) 
             
-            # updaes the url page based on the url_copy and the next_url
-            url=url_copy+next_url
+            # calls a function that finds the next page url using the button for next page
+            next_url=get_next_url(url)
+                
+            # checks if there is a next page button
+            if next_url!='':
+                
+                # updaes the url page based on the url_copy and the next_url
+                url=url_copy+next_url
+                
+            else:            
+                
+                # if there is no next page button the url is ''
+                url=''
             
-        else:            
+            # adds up all the data
+            master_df = pd.concat(all_data)
             
-            # if there is no next page button the url is ''
-            url=''
+        # saves as a .csv file
+        master_df.to_csv("toronto_craigslist_data.csv", index=False)
         
-        # adds up all the data
-        master_df = pd.concat(all_data)
-
-    # saves as a .csv file
-    master_df.to_csv("toronto_craigslist_data.csv", index=False)
+    else:
     
-def get_data_from_page(url: str, largest_rent=6000.0,smallest_rent=10.0):
+        # saves as a .csv file
+        master_df=pd.read_csv("toronto_craigslist_data.csv")
+        
+    # gives a full description of the data
+    description=master_df.groupby("bedroom").describe()
+    
+    print(description)
+    
+    regress_rent_on_bdrms_distance(master_df)
+    
+def get_data_from_page(url: str, largest_rent=6000.0,smallest_rent=10.0,exclude_distance=50):
     """ Returns all the aapartments for rent on a given page on Craigslist
     exclusing rents below smallest_rent, and if a rent is above largest_rent
     it is assumed to be a mistake that is a multiple of 10 of the true rent
@@ -61,6 +82,8 @@ def get_data_from_page(url: str, largest_rent=6000.0,smallest_rent=10.0):
         url: webpage address
         largest_rent: rent above which the true rent is 10 times smaller than its value
         smallest_rent: smallest rent allowed
+        exclude_distance: this excludes rentals that are located over a certain
+                          distance from the initial coordainte. The default is 50
     """
     
     # saves the page in the url
@@ -137,9 +160,11 @@ def get_data_from_page(url: str, largest_rent=6000.0,smallest_rent=10.0):
             
             bdrm=0
                     
-        # checks if the title of the listing has the word "sale" in it
+        # checks if the title of the listing has the word "sale" in it or if the distance
+        # is above exclude_distance from the initial coordinate
         # in order to get rid of apt and houses that are for sale and not for rent
-        if ('sale' in title.text.lower()):
+        # and those that are too far to be considered as part of the city
+        if ('sale' in title.text.lower() or distance>exclude_distance):
         
             pass
         
@@ -230,13 +255,15 @@ def get_distance(final_coordinates,initial_coordinates=[43.6536582,-79.39024]):
     # checks if there are final coordinates
     if (len(final_coordinates)==2):
     
-        slat = radians(initial_coordinates[0])
-        slon = radians(initial_coordinates[1])
-        elat = radians(final_coordinates[0])
-        elon = radians(final_coordinates[1])
+        slat = math.radians(initial_coordinates[0])
+        slon = math.radians(initial_coordinates[1])
+        elat = math.radians(final_coordinates[0])
+        elon = math.radians(final_coordinates[1])
 
         # computing distance by longitudes and latitudes
-        distance = 6371.01 * acos(sin(slat)*sin(elat) + cos(slat)*cos(elat)*cos(slon - elon))
+        distance = 6371.01 * math.acos(math.sin(slat)*math.sin(elat) + \
+                                       math.cos(slat)*math.cos(elat)*\
+                                       math.cos(slon - elon))
      
     # if there are no final coordinates, then it saves distance as a negative
     else:
@@ -265,5 +292,33 @@ def get_next_url(url: str):
     
     # returns the url of the next page
     return next_url.find('a', class_='button next')['href']
-   
-scrape_data()
+
+def regress_rent_on_bdrms_distance(df):
+    """ Regresses rent on bedroom and distance to understand the relationships
+    between them.
+    
+    Args:
+        df: DataFrame to use
+    """
+    
+    # sets the regression variables
+    X = df[['bedroom','distance']]
+    Y = df['rent']
+
+    # with sklearn
+    regr = linear_model.LinearRegression()
+    regr.fit(X, Y)
+    
+    print('An average studio in the initial coordinates costs: \
+          \n', regr.intercept_, 'dollars')
+    print('One additional bedroom conditional on location costs: \
+          \n', regr.coef_[0], 'dollars')
+    print('Conditional on number of bedrooms, moving one km away from the initial coordiates saves: \
+          \n', regr.coef_[1], 'dollars')
+           
+# checks if functions are run from the main page or from another script
+# if it's run from another script, we want to avoid going through the whole
+# code in the main script
+if __name__=="__main__":  
+    scrape_data()
+    
