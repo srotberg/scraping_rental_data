@@ -10,7 +10,6 @@ import geopy.distance as gp
 import math
 from sklearn import linear_model
 import statsmodels.api as sm
-import matplotlib.pyplot as plt
 import seaborn as sns
 
 def scrape_data(url=\
@@ -319,7 +318,7 @@ def regress_rent_on_bdrms_distance(df):
           regr.coef_[0], 'dollars')
     print('Conditional on number of bedrooms, moving one km away from the initial coordiates saves:', \
           regr.coef_[1], 'dollars')
-       
+    
     # plots rent on distance for studio apartments
     sns.scatterplot(x='distance',y='rent',data=df[df['bedroom']==0])
             
