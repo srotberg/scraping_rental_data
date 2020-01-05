@@ -310,16 +310,15 @@ def regress_rent_on_bdrms_distance(df):
     regr = linear_model.LinearRegression()
     regr.fit(X, Y)
     
-    print('An average studio in the initial coordinates costs: \
-          \n', regr.intercept_, 'dollars')
-    print('One additional bedroom conditional on location costs: \
-          \n', regr.coef_[0], 'dollars')
-    print('Conditional on number of bedrooms, moving one km away from the initial coordiates saves: \
-          \n', regr.coef_[1], 'dollars')
+    print('An average studio in the initial coordinates costs:',\
+          regr.intercept_, 'dollars')
+    print('One additional bedroom conditional on location costs:', \
+          regr.coef_[0], 'dollars')
+    print('Conditional on number of bedrooms, moving one km away from the initial coordiates saves:', \
+          regr.coef_[1], 'dollars')
            
 # checks if functions are run from the main page or from another script
 # if it's run from another script, we want to avoid going through the whole
 # code in the main script
 if __name__=="__main__":  
     scrape_data(,1)
-    
