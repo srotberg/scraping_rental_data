@@ -64,7 +64,8 @@ def scrape_data(url,\
         date_today=date.today()
         
         # saves as a .csv file
-        master_df.to_csv(file_name+str(date_today), index=False)
+        master_df.to_csv(file_name.replace('.csv','_')+str(date_today)+'.csv', index=False)
+        
         
     else:
     
