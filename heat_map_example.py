@@ -9,8 +9,9 @@ import geopandas as geopd
 import geoplot as gplt 
 import geoplot.crs as gcrs
 import matplotlib.pyplot as plt
+import mplleaflet as mpl
 
-def plotting_heat_map(file_name='toronto_craigslist_data.csv',\
+def plotting_heat_map(file_name='toronto_data.csv',\
                       json_name='https://raw.githubusercontent.com/jasonicarter/toronto-geojson/master/toronto_crs84.geojson',\
                       max_distance=15,\
                       min_bedrooms=1,\
@@ -20,7 +21,7 @@ def plotting_heat_map(file_name='toronto_craigslist_data.csv',\
     The function plots rents by number of bedrooms on a map
     
     Args:
-        file_name: file name to be called (default='toronto_craigslist_data.csv')
+        file_name: file name to be called (default='toronto_data.csv')
         json_name: file address for the map of the city on which data is superimposed 
                     (defualt='https://raw.githubusercontent.com/jasonicarter/toronto-geojson/master/toronto_crs84.geojson')
         max_distance: exclude renatal that are more than max_distance
@@ -65,5 +66,6 @@ def plotting_heat_map(file_name='toronto_craigslist_data.csv',\
         
     # saves the plot as a .png file
     plt.savefig('heat_map_'+file_name.replace('.csv','.png'))
+    
    
 plotting_heat_map()
