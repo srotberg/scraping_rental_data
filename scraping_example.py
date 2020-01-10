@@ -13,13 +13,6 @@ import statsmodels.api as sm
 import seaborn as sns
 from datetime import date
 
-# checks if functions are run from the main page or from another script
-# if it's run from another script, we want to avoid going through the whole
-# code in the main script
-if __name__=="__main__":  
-    scrape_data('here you input the url',\
-                scrape=0,file_name='toronto_data.csv')
-
 def scrape_data(url,\
                 scrape,file_name='toronto_data.csv'):
     """This function takes url as the website address and loops over all
@@ -330,3 +323,11 @@ def regress_rent_on_bdrms_distance(df):
     
     # plots rent on distance for studio apartments
     sns.scatterplot(x='distance',y='rent',data=df[df['bedroom']==0])
+    
+
+# checks if functions are run from the main page or from another script
+# if it's run from another script, we want to avoid going through the whole
+# code in the main script
+if __name__=="__main__":  
+    scrape_data('here you input the url',\
+                scrape=1,file_name='toronto_data.csv')
