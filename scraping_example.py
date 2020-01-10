@@ -11,11 +11,17 @@ import math
 from sklearn import linear_model
 import statsmodels.api as sm
 import seaborn as sns
+from datetime import date
 
-def scrape_data(url=\
-                'https://toronto.craigslist.org/d/apts-housing-for-rent/search/apa',\
-                scrape=1,file_name='toronto_craigslist_data.csv'):
-    """This function take url as the website address and loops over all
+# checks if functions are run from the main page or from another script
+# if it's run from another script, we want to avoid going through the whole
+# code in the main script
+if __name__=="__main__":  
+    scrape_data('here you input the url',\
+                scrape=0,file_name='toronto_data.csv')
+
+def scrape_data(url,\
+    """This function takes url as the website address and loops over all
     the listings in that url. It saves a DataFrame which includes: rents,
     numbers of bedrooms, location, GPS coordaintes, and distance to downtown 
     (default is Toronto)
@@ -60,9 +66,11 @@ def scrape_data(url=\
             
             # adds up all the data
             master_df = pd.concat(all_data)
-            
+        
+        date=date.today()
+        
         # saves as a .csv file
-        master_df.to_csv(file_name, index=False)
+        master_df.to_csv(file_name+str(date), index=False)
         
     else:
     
@@ -77,7 +85,7 @@ def scrape_data(url=\
     regress_rent_on_bdrms_distance(master_df)
     
 def get_data_from_page(url: str, largest_rent=6000.0,smallest_rent=10.0,exclude_distance=50):
-    """ Returns all the aapartments for rent on a given page on Craigslist
+    """ Returns all the aapartments for rent on a given page in the url
     exclusing rents below smallest_rent, and if a rent is above largest_rent
     it is assumed to be a mistake that is a multiple of 10 of the true rent
     
@@ -309,7 +317,7 @@ def regress_rent_on_bdrms_distance(df):
     Y = df['rent']
 
     # with sklearn
-    regr = linear_model.LinearRegression()
+    regr=linear_model.LinearRegression()
     regr.fit(X, Y)
     
     print('An average studio in the initial coordinates costs:',\
@@ -321,10 +329,3 @@ def regress_rent_on_bdrms_distance(df):
     
     # plots rent on distance for studio apartments
     sns.scatterplot(x='distance',y='rent',data=df[df['bedroom']==0])
-            
-# checks if functions are run from the main page or from another script
-# if it's run from another script, we want to avoid going through the whole
-# code in the main script
-if __name__=="__main__":  
-    scrape_data('https://toronto.craigslist.org/d/apts-housing-for-rent/search/apa',\
-                1,'toronto_craigslist_data.csv')
