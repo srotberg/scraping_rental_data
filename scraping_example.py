@@ -61,10 +61,10 @@ def scrape_data(url,\
             # adds up all the data
             master_df = pd.concat(all_data)
         
-        date=date.today()
+        date_today=date.today()
         
         # saves as a .csv file
-        master_df.to_csv(file_name+str(date), index=False)
+        master_df.to_csv(file_name+str(date_today), index=False)
         
     else:
     
