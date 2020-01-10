@@ -22,3 +22,4 @@ You will need these packages:
 * sklearn
 * statsmodels
 * seaborn
+* from datetime import date
