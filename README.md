@@ -11,7 +11,7 @@ Then, it generates various statistics by the number of bedrooms as well as regre
 
 Lastly, if you run this plotting [script](heat_map_example.py), you will get a heat map of all the rents around the city. Here is what I got when I ran the code on January 5th 2020:
 
-<img src="heat_map_toronto_craigslist_data.png"/>
+<img src="heat_map_toronto.png"/>
 
 You will need these packages:
 * requests
