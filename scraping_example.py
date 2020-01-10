@@ -21,6 +21,7 @@ if __name__=="__main__":
                 scrape=0,file_name='toronto_data.csv')
 
 def scrape_data(url,\
+                scrape,file_name='toronto_data.csv'):
     """This function takes url as the website address and loops over all
     the listings in that url. It saves a DataFrame which includes: rents,
     numbers of bedrooms, location, GPS coordaintes, and distance to downtown 
