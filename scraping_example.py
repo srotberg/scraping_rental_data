@@ -14,7 +14,7 @@ import seaborn as sns
 from datetime import date
 
 def scrape_data(url,\
-                scrape,file_name='toronto_data.csv'):
+                scrape,file_name):
     """This function take url as the website address and loops over all
     the listings in that url. It saves a DataFrame which includes: rents,
     numbers of bedrooms, location, GPS coordaintes, and distance to downtown 
@@ -329,4 +329,4 @@ def regress_rent_on_bdrms_distance(df):
 # code in the main script
 if __name__=="__main__":  
     scrape_data('here is where you plug in your url',\
-                scrape=1,file_name='file_name.csv')
+                scrape=1,file_name='your_file_name.csv')
