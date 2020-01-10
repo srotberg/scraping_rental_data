@@ -1,5 +1,5 @@
 """
-Scraping example
+Scraping example. You will need to go to the bottom of the code and provide the url and file name you wish to have.
 """
 
 import requests as rq
@@ -15,7 +15,7 @@ from datetime import date
 
 def scrape_data(url,\
                 scrape,file_name='toronto_data.csv'):
-    """This function takes url as the website address and loops over all
+    """This function take url as the website address and loops over all
     the listings in that url. It saves a DataFrame which includes: rents,
     numbers of bedrooms, location, GPS coordaintes, and distance to downtown 
     (default is Toronto)
@@ -294,7 +294,7 @@ def get_next_url(url: str):
     # finds the next url by looking at the button "next" at the end of the
     # listing page
     next_url=soup.find('span', class_='buttons')
-    
+        
     # returns the url of the next page
     return next_url.find('a', class_='button next')['href']
 
@@ -324,10 +324,9 @@ def regress_rent_on_bdrms_distance(df):
     # plots rent on distance for studio apartments
     sns.scatterplot(x='distance',y='rent',data=df[df['bedroom']==0])
     
-
 # checks if functions are run from the main page or from another script
 # if it's run from another script, we want to avoid going through the whole
 # code in the main script
 if __name__=="__main__":  
-    scrape_data('here you input the url',\
-                scrape=1,file_name='toronto_data.csv')
+    scrape_data('here is where you plug in your url',\
+                scrape=1,file_name='file_name.csv')
